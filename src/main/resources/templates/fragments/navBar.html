@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="navbar" style="width: 100%;">
+<style>
+    .nav-wrapper {
+        width: 100%;
+        max-width: 1000px;
+        margin: 50px auto 2rem auto;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+
+
+    .nav-card {
+        flex: 1;
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background-color: #ffffff;
+        border: 1px solid #e4e4e7;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        color: #71717a;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+
+    .nav-card:hover {
+        background-color: #f4f4f5;
+        color: #09090b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-color: #d1d1d6;
+    }
+
+
+    .nav-card.active {
+        border-color: #09090b;
+        color: #09090b;
+        background-color: #fafafa;
+    }
+    .nav-card i, .nav-card svg {
+        margin-right: 8px;
+        width: 16px;
+        height: 16px;
+    }
+</style>
+<body>
+<nav class="nav-wrapper"  >
+    <a href="/produit" class="nav-card active">
+        <span>Produits</span>
+    </a>
+
+    <a href="/produits" class="nav-card">
+        <span>Fournisseurs</span>
+    </a>
+
+    <a href="/categories" class="nav-card">
+        <span>Mouvements</span>
+    </a>
+
+    <a href="/orders" class="nav-card">
+        <span>Statistiques</span>
+    </a>
+</nav>
+</body>
+</div>
+</html>

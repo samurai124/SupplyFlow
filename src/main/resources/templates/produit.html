@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #ffffff; color: #09090b; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+
+        .header-container { width: 100%; max-width: 1000px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        h1 { font-size: 1.5rem; font-weight: 600; margin: 0; }
+
+        .table-container { width: 100%; max-width: 1000px; border: 1px solid #e4e4e7; border-radius: 0.5rem; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        th, td { padding: 1rem; border-bottom: 1px solid #e4e4e7; border-right: 1px solid #e4e4e7; }
+        th:last-child, td:last-child { border-right: none; }
+        thead { background-color: #fafafa; }
+        th { text-align: left; font-weight: 500; color: #71717a; }
+        tr:hover { background-color: #f4f4f5; }
+
+        .font-medium { font-weight: 500; }
+        .text-right { text-align: right; }
+        .actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 0.375rem; font-size: 0.825rem; font-weight: 500; height: 2.25rem; padding: 0 1rem; text-decoration: none; transition: 0.2s; cursor: pointer; border: none; }
+        .btn-outline { border: 1px solid #e4e4e7; background-color: white; color: #09090b; }
+        .btn-outline:hover { background-color: #f4f4f5; }
+        .btn-primary { background-color: #09090b; color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 24px; border-radius: 0.5rem; width: 100%; max-width: 425px; border: 1px solid #e4e4e7; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); animation: modalIn 0.2s ease-out; }
+
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .modal-header { margin-bottom: 20px; }
+        .modal-title { font-size: 1.125rem; font-weight: 600; }
+        .modal-description { font-size: 0.875rem; color: #71717a; margin-top: 4px; }
+
+        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 0.875rem; font-weight: 500; }
+        .form-group input, .form-group select { height: 2.5rem; border: 1px solid #e4e4e7; border-radius: 0.375rem; padding: 0 12px; font-size: 0.875rem; box-sizing: border-box; width: 100%; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments/navBar :: navbar"></div>
+
+<div class="header-container">
+    <h1>Product List</h1>
+    <button class="btn btn-primary" onclick="openModal('addModal')">Add Product</button>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 80px;">Id</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th class="text-right">Price</th>
+            <th class="text-right">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="produit : ${produits}">
+            <td class="font-medium" th:text="${produit.id}">1</td>
+            <td th:text="${produit.nom}">Laptop</td>
+            <td th:text="${produit.categorie}">Electronics</td>
+            <td th:text="${produit.quantite}">10</td>
+            <td class="text-right" th:text="${produit.prix }">500</td>
+            <td class="actions">
+                <button class="btn btn-outline"
+                        th:attr="data-id=${produit.id}, data-nom=${produit.nom}, data-cat=${produit.categorie}, data-prix=${produit.prix}, data-qte=${produit.quantite}"
+                        onclick="openEditModal(this)">
+                    Edit
+                </button>
+                <button class="btn btn-primary" th:attr="data-id=${produit.id}" onclick="deleteProduit(this)">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="addModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Create Product</div>
+            <div class="modal-description">Add a new item to your inventory.</div>
+        </div>
+        <form action="/produit" method="POST">
+            <div class="form-group">
+                <label for="nom">Product Name</label>
+                <input type="text" name="nom" placeholder="e.g. Wireless Keyboard" required>
+            </div>
+            <div class="form-group">
+                <label for="categorie">Category</label>
+                <select name="categorie">
+                    <option value="electronics">Electronics</option>
+                    <option value="office">Office</option>
+                    <option value="furniture">Furniture</option>
+                </select>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Price (€)</label>
+                    <input type="number" name="prix" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" name="quantite" placeholder="0" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('addModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Edit Product</div>
+            <div class="modal-description">Update the product details.</div>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="editId" >
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="editNom" required>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <input type="text" id="editCategorie" required>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" id="editPrix" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" id="editQuantite" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('editModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+
+    function openEditModal(el) {
+        document.getElementById('editId').value = el.dataset.id;
+        document.getElementById('editNom').value = el.dataset.nom;
+        document.getElementById('editCategorie').value = el.dataset.cat;
+        document.getElementById('editPrix').value = el.dataset.prix;
+        document.getElementById('editQuantite').value = el.dataset.qte;
+        openModal('editModal');
+    }
+
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.style.display = 'none';
+        }
+    }
+
+
+    document.getElementById('editForm').onsubmit = function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editId').value;
+        const produit = {
+            nom: document.getElementById('editNom').value,
+            categorie: document.getElementById('editCategorie').value,
+            prix: document.getElementById('editPrix').value,
+            quantite: document.getElementById('editQuantite').value
+        };
+
+        fetch('/produit/' + id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(produit)
+        }).then(res => res.ok ? location.reload() : alert("Update failed"));
+    };
+
+
+    function deleteProduit(el) {
+        const id = el.dataset.id;
+        if(confirm("Confirm deletion?")) {
+            fetch('/produit/' + id, { method: 'DELETE' })
+                .then(res => res.ok ? location.reload() : alert("!!!!"));
+        }
+    }
+</script>
+</body>
+</html>
