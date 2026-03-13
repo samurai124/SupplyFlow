@@ -29,20 +29,10 @@ public class FournisseurController {
     }
 
     @PostMapping
-    public String saveFournisseur(
-            @RequestParam String nom,
-            @RequestParam String ville,
-            @RequestParam String telephone
-    ){
-        Fournisseur fournisseur = new Fournisseur();
-        fournisseur.setNom(nom);
-        fournisseur.setVille(ville);
-        fournisseur.setTelephone(telephone);
-
+    @ResponseBody
+    public ResponseEntity<Void> saveFournisseur(@RequestBody Fournisseur fournisseur){
         fournisseurService.save(fournisseur);
-
-        return "redirect:/fournisseur";
-
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
@@ -55,7 +45,7 @@ public class FournisseurController {
 
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Void> updateFournisseur(@PathVariable long id,Fournisseur fournisseur){
+    public ResponseEntity<Void> updateFournisseur(@PathVariable long id, @PathVariable  Fournisseur fournisseur){
         fournisseur.setId(id);
         fournisseurService.save(fournisseur);
         return ResponseEntity.ok().build();
