@@ -45,7 +45,7 @@ public class FournisseurController {
 
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Void> updateFournisseur(@PathVariable long id, @RequestBody Fournisseur fournisseur){
+    public ResponseEntity<Void> updateFournisseur(@PathVariable long id, @PathVariable  Fournisseur fournisseur){
         fournisseur.setId(id);
         fournisseurService.save(fournisseur);
         return ResponseEntity.ok().build();

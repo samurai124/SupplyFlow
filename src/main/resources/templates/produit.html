@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:h="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,7 +92,7 @@
             <div class="modal-title">Create Product</div>
             <div class="modal-description">Add a new item to your inventory.</div>
         </div>
-        <form action="/produit" method="POST">
+        <form id="addForm" onsubmit="submitAddProduct(event)">
             <div class="form-group">
                 <label for="nom">Product Name</label>
                 <input type="text" name="nom" placeholder="e.g. Wireless Keyboard" required>
@@ -103,6 +103,13 @@
                     <option value="electronics">Electronics</option>
                     <option value="office">Office</option>
                     <option value="furniture">Furniture</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fournisseur">Fournisseur</label>
+                <select name="fournisseur">
+                    <option  th:each="four : ${fournisseurs}" th:value="${four.id}"
+                            th:text="${four.nom}" >Electronics</option>
                 </select>
             </div>
             <div class="grid-2">
@@ -200,6 +207,24 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(produit)
         }).then(res => res.ok ? location.reload() : alert("Update failed"));
+    };
+
+    document.getElementById('addForm').onsubmit = function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const produit = {
+            nom: form.querySelector('input[name="nom"]').value,
+            categorie: form.querySelector('select[name="categorie"]').value,
+            fournisseur: form.querySelector('select[name="fournisseur"]').value,
+            prix: form.querySelector('input[name="prix"]').value,
+            quantite: form.querySelector('input[name="quantite"]').value
+        };
+
+        fetch('/produit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(produit)
+        }).then(res => res.ok ? location.reload() : alert("Add failed"));
     };
 
 

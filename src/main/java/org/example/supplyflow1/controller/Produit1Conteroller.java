@@ -3,21 +3,19 @@ package org.example.supplyflow1.controller;
 
 import org.example.supplyflow1.model.Fournisseur;
 import org.example.supplyflow1.model.Produit;
-import org.example.supplyflow1.repository.ProduitRepository;
 import org.example.supplyflow1.service.FournisseurService;
 import org.example.supplyflow1.service.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 @Controller
-@RequestMapping("/produit")
-public class ProduitController {
+@RequestMapping("/produit1")
+public class Produit1Conteroller{
 
 
     @Autowired
@@ -32,7 +30,7 @@ public class ProduitController {
         List<Fournisseur> fournisseurs = fournisseurService.findAll();
         model.addAttribute("produits",produits);
         model.addAttribute("fournisseurs",fournisseurs);
-        return "produit";
+        return "produit1";
     }
 
 
@@ -43,7 +41,7 @@ public class ProduitController {
             @RequestParam Double prix,
             @RequestParam Integer quantite,
             @RequestParam long fournisseur
-                              ){
+    ){
         Produit produit = new Produit();
         produit.setNom(nom);
         produit.setCategorie(categorie);
@@ -52,22 +50,23 @@ public class ProduitController {
         produit.getFournisseurs().add(fournisseurService.findById(fournisseur));
 
         produitService.save(produit);
-        return "redirect:/produit";
+        return "redirect:/produit1";
 
     }
-
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> deleteProduit(@PathVariable Long id){
-        produitService.delete(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> updateProduit(@PathVariable long id, @RequestBody Produit produit){
-        produit.setId(id);
-        produitService.save(produit);
-        return ResponseEntity.ok().build();
-    }
+//
+//    @DeleteMapping("/{id}")
+//    @ResponseBody
+//    public ResponseEntity<Void> deleteProduit(@PathVariable Long id){
+//        produitService.delete(id);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    @PutMapping("/{id}")
+//    @ResponseBody
+//    public ResponseEntity<Void> updateProduit(@PathVariable long id, @RequestBody Produit produit){
+//        produit.setId(id);
+//        produitService.save(produit);
+//        return ResponseEntity.ok().build();
+//    }
+//
 }

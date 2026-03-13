@@ -3,6 +3,7 @@ package org.example.supplyflow1.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,7 +22,7 @@ public class Produit {
     private int quantite;
 
     @OneToMany(mappedBy = "produit" , cascade = CascadeType.ALL)
-    private List<Mouvement> mouvements;
+    private List<Mouvement> mouvements =  new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -29,7 +30,7 @@ public class Produit {
             joinColumns = @JoinColumn(name = "produit_id"),
             inverseJoinColumns = @JoinColumn(name = "fournisseur_id")
     )
-    private List<Fournisseur> fournisseurs;
+    private List<Fournisseur> fournisseurs = new ArrayList<>();
     public Produit(){}
 
     public List<Mouvement> getMouvements() {
