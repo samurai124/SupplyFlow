@@ -1,4 +1,3 @@
-(<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -275,15 +274,20 @@
                 <td th:text="${fournisseur.id}"></td>
                 <td th:text="${fournisseur.nom}"></td>
                 <td th:text="${fournisseur.ville}"></td>
-                <td th:text="${fournisseur.numero}"></td>
+                <td th:text="${fournisseur.telephone}"></td>
                 <td class="action">
                     <button class="btn btn-outline"
-                            th:onclick="|edit({id: '${fournisseur.id}', nom: '${fournisseur.nom}', ville: '${fournisseur.ville}', telephone: '${fournisseur.numero}'})|">
+                            th:data-id="${fournisseur.id}"
+                            th:data-nom="${fournisseur.nom}"
+                            th:data-ville="${fournisseur.ville}"
+                            th:data-telephone="${fournisseur.telephone}"
+                            onclick="editFromButton(this)">
                         Modifier
                     </button>
 
                     <button class="btn btn-delete"
-                            th:onclick="|deleteFournisseur('${fournisseur.id}')|">
+                            th:data-id="${fournisseur.id}"
+                            onclick="deleteFournisseur(this.dataset.id)">
                         Supprimer
                     </button>
                 </td>
@@ -324,7 +328,7 @@
             <h3 class="modal-title">Ajouter fournisseur : </h3>
             <button class="btn btn-outline" id="close" onclick="closeForm()">fermer</button>
         </div>
-        <form th:action="@{/fournisseur}" method="post" onsubmit="submitAddForm(event)">
+        <form th:action="@{/fournisseur}" method="post">
             <div class="form-group">
                 <label for="nom">Nom</label>
                 <input type="text" name="nom" id="nom" required>
@@ -359,6 +363,16 @@
         document.getElementById("nom").value = fournisseur.nom;
         document.getElementById("ville").value = fournisseur.ville;
         document.getElementById("telephone").value = fournisseur.telephone;
+    }
+
+    function editFromButton(button) {
+        const fournisseur = {
+            id: button.dataset.id,
+            nom: button.dataset.nom,
+            ville: button.dataset.ville,
+            telephone: button.dataset.telephone
+        };
+        edit(fournisseur);
     }
 
     function openForm() {
