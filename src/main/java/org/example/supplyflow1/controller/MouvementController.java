@@ -65,7 +65,10 @@ public class MouvementController {
             @PathVariable long id,
             @RequestBody Mouvement mouvement
     ){
-        mouvementService.update(id, mouvement);
+       Mouvement m = mouvementService.findById(id);
+       mouvement.setId(id);
+       mouvement.setDate(m.getDate());
+       mouvementService.save(mouvement);
         return ResponseEntity.ok().build();
     }
 

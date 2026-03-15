@@ -311,7 +311,7 @@
             <h3 class="modal-title">Modifier fournisseur : </h3>
             <button class="btn btn-outline" onclick="closeForm()">fermer</button>
         </div>
-        <form id="editFormElement" th:action="@{/mouvement}" method="put" onsubmit="submitEditForm(event)">
+        <form id="editFormElement"  onsubmit="submitEditForm(event)">
             <input type="number" id="editId" name="id" hidden>
             <div class="form-group-radio">
                 <label>type : </label>
@@ -407,13 +407,20 @@
         container1.style.display = "none";
     }
 
-    function submitEditForm(event) {
+    async  function submitEditForm(event) {
         event.preventDefault();
         const id = document.getElementById("editId").value;
         const type = document.querySelector('input[name="type"]:checked').value;
-        const produit = document.querySelector("#produit").value;
-        const quantite = document.querySelector("#addquantite").value;
-        const mouvement = {type: type, produit: produit, quantite: quantite};
+        const produit = document.querySelector("#editProduit").value;
+        const quantite = document.querySelector("#editQuantite").value;
+        const produits = await getProduits();
+        const produitObj = produits.find((e) => e.id == produit);
+        const mouvement = {type: type, produit: produitObj, quantite: quantite};
+
+        if (type === "sortie" && produitObj.quantite < quantite) {
+            alert("pas assez de quantité");
+            return;
+        }
 
         fetch("/mouvement/" + id, {
             method: "PUT",
