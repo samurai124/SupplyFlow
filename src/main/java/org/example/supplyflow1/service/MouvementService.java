@@ -41,4 +41,12 @@ public class MouvementService {
         mouvementRepository.deleteAll();
     }
 
+    @Transactional
+    public Mouvement update(long id, Mouvement mouvement){
+        Mouvement existing = mouvementRepository.findById(id).get();
+        existing.setType(mouvement.getType());
+        existing.setQuantite(mouvement.getQuantite());
+        return mouvementRepository.save(existing);
+    }
+
 }

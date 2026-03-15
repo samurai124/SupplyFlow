@@ -59,5 +59,23 @@ public class MouvementController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> editMouvement(
+            @PathVariable long id,
+            @RequestBody Mouvement mouvement
+    ){
+        mouvementService.update(id, mouvement);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> deleteMouvement(
+            @PathVariable long id
+    ){
+        mouvementService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

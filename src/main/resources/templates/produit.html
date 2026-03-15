@@ -244,7 +244,7 @@
 
     function deleteProduit(el) {
         const id = el.dataset.id;
-        if(confirm("Confirm deletion?")) {
+        if(confirm("Êtes-vous sûr de vouloir supprimer ce profuit ?")) {
             fetch('/produit/' + id, { method: 'DELETE' })
                 .then(res => res.ok ? location.reload() : alert("!!!!"));
         }

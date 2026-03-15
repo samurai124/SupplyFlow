@@ -78,8 +78,7 @@
         padding: 0 1rem;
         text-decoration: none;
         transition: 0.2s;
-        cursor:
-                pointer;
+        cursor: pointer;
         border: none;
     }
 
@@ -112,6 +111,7 @@
     .action-th {
         text-align: center;
     }
+
     .container2,
     .container1 {
         position: fixed;
@@ -232,12 +232,14 @@
         color: #09090b;
         background-color: #fafafa;
     }
+
     .nav-card i, .nav-card svg {
         margin-right: 8px;
         width: 16px;
         height: 16px;
     }
-    .form-group-radio{
+
+    .form-group-radio {
 
     }
 </style>
@@ -248,15 +250,15 @@
         <span>Produits</span>
     </a>
 
-    <a th:href="@{/produits}" class="nav-card">
+    <a th:href="@{/fournisseur}" class="nav-card">
         <span>Fournisseurs</span>
     </a>
 
-    <a th:href="@{/categories}" class="nav-card active">
+    <a th:href="@{/mouvement}" class="nav-card active">
         <span>Mouvements</span>
     </a>
 
-    <a th:href="@{/orders}" class="nav-card">
+    <a href="#" class="nav-card">
         <span>Statistiques</span>
     </a>
 </nav>
@@ -307,14 +309,14 @@
     <div class="add-form-container">
         <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
             <h3 class="modal-title">Modifier fournisseur : </h3>
-            <button class="btn btn-outline"  onclick="closeForm()">fermer</button>
+            <button class="btn btn-outline" onclick="closeForm()">fermer</button>
         </div>
         <form id="editFormElement" th:action="@{/mouvement}" method="put" onsubmit="submitEditForm(event)">
             <input type="number" id="editId" name="id" hidden>
             <div class="form-group-radio">
                 <label>type : </label>
                 <input type="radio" name="type" value="entrer">Entrer
-                <input type="radio" name="type" value="sortie" >Sortie<br/>
+                <input type="radio" name="type" value="sortie">Sortie<br/>
             </div>
             <div class="form-group">
                 <label>Produit</label>
@@ -342,7 +344,7 @@
             <div class="form-group-radio">
                 <label>type : </label>
                 <input type="radio" name="type" value="entrer">Entrer
-                <input type="radio" name="type" value="sortie" >Sortie<br/>
+                <input type="radio" name="type" value="sortie">Sortie<br/>
             </div>
             <div class="form-group">
                 <label>Produit</label>
@@ -351,7 +353,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label >quantite</label>
+                <label>quantite</label>
                 <input type="text" name="qunatite" id="addquantite" required>
             </div>
             <input type="text" id="produits" th:value="${produits}" hidden="">
@@ -388,7 +390,7 @@
         const mouvement = {
             id: button.dataset.id,
             type: button.dataset.type,
-            produit: button.dataset.produit,
+            produit:  button.dataset.produit,
             quantite: button.dataset.quantite
         };
         edit(mouvement);
@@ -422,52 +424,47 @@
 
     async function submitAddForm(event) {
         event.preventDefault();
-        
+
         const typeRadio = document.querySelector('input[name="type"]:checked');
         const type = typeRadio.value;
         const produit_id = document.querySelector("#produit").value;
         const quantite = parseInt(document.querySelector("#addquantite").value);
-        
-        const mouvement = {type: type, quantite: quantite};
-        
-        try {
-            const produits = await getProduits();
-            const produit = produits.find((element) => element.id == produit_id);
-            
-            if (!produit) {
-                alert("Product not found");
-                return;
-            }
 
-            if (type === "sortie" && produit.quantite < quantite) {
-                alert("pas assez de quantité");
-                return;
-            }
-            
-            const response = await fetch("/mouvement/"+produit_id, {
-                method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(mouvement)
-            });
-            
-            if (response.ok) {
-                location.reload();
-            } else {
-                console.log(response)
-                alert("Add failed");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("An error occurred");
+        const mouvement = {type: type, quantite: quantite};
+
+        const produits = await getProduits();
+        const produit = produits.find((element) => element.id == produit_id);
+
+        if (!produit) {
+            alert(" produit n'exist pas !!!! ");
+            return;
+        }
+
+        if (type === "sortie" && produit.quantite < quantite) {
+            alert("pas assez de quantité");
+            return;
+        }
+
+        const response = await fetch("/mouvement/" + produit_id, {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(mouvement)
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            console.log(response)
+            alert("Add failed");
         }
     }
 
     function deleteFournisseur(id) {
-        if (confirm("Are you sure you want to delete this mouvement?")) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer ce mouvement ?")) {
             const mouvementId = typeof id === 'string' ? id : id.dataset.id;
             fetch("/mouvement/" + mouvementId, {
                 method: "DELETE"
-            }).then(res => res.ok ? location.reload() : alert("Delete failed"));
+            }).then(res => res.ok ? location.reload() : alert("échec de la suppression"));
         }
     }
 </script>
