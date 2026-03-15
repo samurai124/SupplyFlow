@@ -63,6 +63,7 @@
             <th>Category</th>
             <th>Quantity</th>
             <th class="text-right">Price</th>
+            <th>Fournisseur</th>
             <th class="text-right">Actions</th>
         </tr>
         </thead>
@@ -73,9 +74,13 @@
             <td th:text="${produit.categorie}">Electronics</td>
             <td th:text="${produit.quantite}">10</td>
             <td class="text-right" th:text="${produit.prix }">500</td>
+            <td>
+                <span th:if="${#lists.isEmpty(produit.fournisseurs)}" style="color: #999;">N/A</span>
+                <span th:unless="${#lists.isEmpty(produit.fournisseurs)}" th:text="${produit.fournisseurs[0].nom}">Supplier</span>
+            </td>
             <td class="actions">
                 <button class="btn btn-outline"
-                        th:attr="data-id=${produit.id}, data-nom=${produit.nom}, data-cat=${produit.categorie}, data-prix=${produit.prix}, data-qte=${produit.quantite}"
+                        th:attr="data-id=${produit.id}, data-nom=${produit.nom}, data-cat=${produit.categorie}, data-prix=${produit.prix}, data-qte=${produit.quantite}, data-fournisseur=${#lists.isEmpty(produit.fournisseurs) ? '' : produit.fournisseurs[0].id}"
                         onclick="openEditModal(this)">
                     Edit
                 </button>
@@ -92,7 +97,7 @@
             <div class="modal-title">Create Product</div>
             <div class="modal-description">Add a new item to your inventory.</div>
         </div>
-        <form id="addForm" onsubmit="submitAddProduct(event)">
+        <form id="addForm">
             <div class="form-group">
                 <label for="nom">Product Name</label>
                 <input type="text" name="nom" placeholder="e.g. Wireless Keyboard" required>
@@ -146,6 +151,13 @@
                 <label>Category</label>
                 <input type="text" id="editCategorie" required>
             </div>
+            <div class="form-group">
+                <label>Fournisseur</label>
+                <select id="editFournisseur" required>
+                    <option th:each="four : ${fournisseurs}" th:value="${four.id}"
+                            th:text="${four.nom}">Fournisseur</option>
+                </select>
+            </div>
             <div class="grid-2">
                 <div class="form-group">
                     <label>Price</label>
@@ -181,6 +193,7 @@
         document.getElementById('editCategorie').value = el.dataset.cat;
         document.getElementById('editPrix').value = el.dataset.prix;
         document.getElementById('editQuantite').value = el.dataset.qte;
+        document.getElementById('editFournisseur').value = el.dataset.fournisseur || '';
         openModal('editModal');
     }
 
@@ -195,11 +208,13 @@
     document.getElementById('editForm').onsubmit = function(e) {
         e.preventDefault();
         const id = document.getElementById('editId').value;
+        const fournisseurId = document.getElementById('editFournisseur').value;
         const produit = {
             nom: document.getElementById('editNom').value,
             categorie: document.getElementById('editCategorie').value,
-            prix: document.getElementById('editPrix').value,
-            quantite: document.getElementById('editQuantite').value
+            prix: Number(document.getElementById('editPrix').value),
+            quantite: Number(document.getElementById('editQuantite').value),
+            fournisseur: fournisseurId ? Number(fournisseurId) : null
         };
 
         fetch('/produit/' + id, {
@@ -212,18 +227,17 @@
     document.getElementById('addForm').onsubmit = function(e) {
         e.preventDefault();
         const form = e.target;
-        const produit = {
-            nom: form.querySelector('input[name="nom"]').value,
-            categorie: form.querySelector('select[name="categorie"]').value,
-            fournisseur: form.querySelector('select[name="fournisseur"]').value,
-            prix: form.querySelector('input[name="prix"]').value,
-            quantite: form.querySelector('input[name="quantite"]').value
-        };
+        const payload = new URLSearchParams();
+        payload.append('nom', form.querySelector('input[name="nom"]').value);
+        payload.append('categorie', form.querySelector('select[name="categorie"]').value);
+        payload.append('fournisseur', form.querySelector('select[name="fournisseur"]').value);
+        payload.append('prix', form.querySelector('input[name="prix"]').value);
+        payload.append('quantite', form.querySelector('input[name="quantite"]').value);
 
         fetch('/produit', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(produit)
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: payload.toString()
         }).then(res => res.ok ? location.reload() : alert("Add failed"));
     };
 

@@ -9,7 +9,7 @@
     <link
             href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
             rel="stylesheet">
-    <title>Fournisseur</title>
+    <title>Mouvment</title>
 </head>
 <style>
     body {
@@ -237,11 +237,14 @@
         width: 16px;
         height: 16px;
     }
+    .form-group-radio{
+
+    }
 </style>
 
 <body>
 <nav class="nav-wrapper">
-    <a th:href="@{/produit}" class="nav-card active">
+    <a th:href="@{/produit}" class="nav-card ">
         <span>Produits</span>
     </a>
 
@@ -249,7 +252,7 @@
         <span>Fournisseurs</span>
     </a>
 
-    <a th:href="@{/categories}" class="nav-card">
+    <a th:href="@{/categories}" class="nav-card active">
         <span>Mouvements</span>
     </a>
 
@@ -265,29 +268,32 @@
         <table>
             <thead>
             <th>Id</th>
-            <th>Nom</th>
-            <th>Ville</th>
-            <th>telephone</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Produit</th>
+            <th>quantite</th>
             <th class="action-th">Actions</th>
             </thead>
             <tbody>
-            <tr th:each="fournisseur : ${fournisseurs}">
-                <td th:text="${fournisseur.id}"></td>
-                <td th:text="${fournisseur.nom}"></td>
-                <td th:text="${fournisseur.ville}"></td>
-                <td th:text="${fournisseur.telephone}"></td>
+            <tr th:each="mouvement : ${mouvements}">
+                <td th:text="${mouvement.id}"></td>
+                <td th:text="${mouvement.type}"></td>
+                <td th:text="${mouvement.date}"></td>
+                <td th:text="${mouvement.produit.nom}"></td>
+                <td th:text="${mouvement.quantite}"></td>
                 <td class="action">
                     <button class="btn btn-outline"
-                            th:data-id="${fournisseur.id}"
-                            th:data-nom="${fournisseur.nom}"
-                            th:data-ville="${fournisseur.ville}"
-                            th:data-telephone="${fournisseur.telephone}"
+                            th:data-id="${mouvement.id}"
+                            th:data-type="${mouvement.type}"
+                            th:data-date="${mouvement.date}"
+                            th:data-produit="${mouvement.produit.id}"
+                            th:data-quantite="${mouvement.quantite}"
                             onclick="editFromButton(this)">
                         Modifier
                     </button>
 
                     <button class="btn btn-delete"
-                            th:data-id="${fournisseur.id}"
+                            th:data-id="${mouvement.id}"
                             onclick="deleteFournisseur(this)">
                         Supprimer
                     </button>
@@ -301,21 +307,24 @@
     <div class="add-form-container">
         <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
             <h3 class="modal-title">Modifier fournisseur : </h3>
-            <button class="btn btn-outline" id="close" onclick="closeForm()">fermer</button>
+            <button class="btn btn-outline"  onclick="closeForm()">fermer</button>
         </div>
-        <form id="editFormElement" th:action="@{/fournisseur}" method="put" onsubmit="submitEditForm(event)">
+        <form id="editFormElement" th:action="@{/mouvement}" method="put" onsubmit="submitEditForm(event)">
             <input type="number" id="editId" name="id" hidden>
-            <div class="form-group">
-                <label for="nom">Nom</label>
-                <input type="text" name="nom" id="editNom">
+            <div class="form-group-radio">
+                <label>type : </label>
+                <input type="radio" name="type" value="entrer">Entrer
+                <input type="radio" name="type" value="sortie" >Sortie<br/>
             </div>
             <div class="form-group">
-                <label for="ville">Ville</label>
-                <input type="text" name="ville" id="editVille">
+                <label>Produit</label>
+                <select name="produit" id="editProduit">
+                    <option th:each="produit : ${produits}" th:value="${produit.id}" th:text="${produit.nom}"></option>
+                </select>
             </div>
             <div class="form-group">
-                <label for="telephone">Telephone</label>
-                <input type="text" name="telephone" id="editTelephone">
+                <label>quantite</label>
+                <input type="text" name="quantite" id="editQuantite" required>
             </div>
             <div style="display: flex; align-items: center; justify-content: center;">
                 <button class="btn btn-outline" style="width: 200px;" type="submit">Modifier</button>
@@ -326,22 +335,26 @@
 <div class="container2" id="container2">
     <div class="add-form-container">
         <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
-            <h3 class="modal-title">Ajouter fournisseur : </h3>
-            <button class="btn btn-outline" id="close" onclick="closeForm()">fermer</button>
+            <h3 class="modal-title">Ajouter Mouvement : </h3>
+            <button class="btn btn-outline" onclick="closeForm()">fermer</button>
         </div>
-        <form id="addFormElement" th:action="@{/fournisseur}" method="post" onsubmit="submitAddForm(event)">
-            <div class="form-group">
-                <label for="nom">Nom</label>
-                <input type="text" name="nom" id="addNom" required>
+        <form id="addFormElement" th:action="@{/mouvement}" method="post" onsubmit="submitAddForm(event)">
+            <div class="form-group-radio">
+                <label>type : </label>
+                <input type="radio" name="type" value="entrer">Entrer
+                <input type="radio" name="type" value="sortie" >Sortie<br/>
             </div>
             <div class="form-group">
-                <label for="ville">Ville</label>
-                <input type="text" name="ville" id="addVille" required>
+                <label>Produit</label>
+                <select name="produit" id="produit">
+                    <option th:each="produit : ${produits}" th:value="${produit.id}" th:text="${produit.nom}"></option>
+                </select>
             </div>
             <div class="form-group">
-                <label for="telephone">Telephone</label>
-                <input type="text" name="telephone" id="addTelephone" required>
+                <label >quantite</label>
+                <input type="text" name="qunatite" id="addquantite" required>
             </div>
+            <input type="text" id="produits" th:value="${produits}" hidden="">
             <div style="display: flex; align-items: center; justify-content: center;">
                 <button class="btn btn-outline" style="width: 200px;" type="submit">Ajouter</button>
             </div>
@@ -352,28 +365,33 @@
 </body>
 <script>
     let add_btn = document.getElementById("add-btn");
-    let close = document.getElementById("close");
     let container = document.querySelector("#container");
     let container2 = document.querySelector("#container2");
     let container1 = document.querySelector("#container1");
 
-    function edit(fournisseur) {
+    function edit(mouvement) {
         container.style.filter = "blur(5px)";
         container1.style.display = "flex";
-        document.getElementById("editId").value = fournisseur.id;
-        document.getElementById("editNom").value = fournisseur.nom;
-        document.getElementById("editVille").value = fournisseur.ville;
-        document.getElementById("editTelephone").value = fournisseur.telephone;
+        document.getElementById("editId").value = mouvement.id;
+        document.querySelector('input[name="type"][value="' + mouvement.type + '"]').checked = true;
+        document.getElementById("editProduit").value = mouvement.produit;
+        document.getElementById("editQuantite").value = mouvement.quantite;
+    }
+
+    async function getProduits() {
+        const response = await fetch('/produit/list');
+        const produits = await response.json();
+        return produits;
     }
 
     function editFromButton(button) {
-        const fournisseur = {
+        const mouvement = {
             id: button.dataset.id,
-            nom: button.dataset.nom,
-            ville: button.dataset.ville,
-            telephone: button.dataset.telephone
+            type: button.dataset.type,
+            produit: button.dataset.produit,
+            quantite: button.dataset.quantite
         };
-        edit(fournisseur);
+        edit(mouvement);
     }
 
     function openForm() {
@@ -390,36 +408,64 @@
     function submitEditForm(event) {
         event.preventDefault();
         const id = document.getElementById("editId").value;
-        const nom = document.getElementById("editNom").value;
-        const ville = document.getElementById("editVille").value;
-        const telephone = document.getElementById("editTelephone").value;
-        const fournisseur = {nom: nom, ville: ville, telephone: telephone};
-        
-        fetch("/fournisseur/" + id, {
+        const type = document.querySelector('input[name="type"]:checked').value;
+        const produit = document.querySelector("#produit").value;
+        const quantite = document.querySelector("#addquantite").value;
+        const mouvement = {type: type, produit: produit, quantite: quantite};
+
+        fetch("/mouvement/" + id, {
             method: "PUT",
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(fournisseur)
+            body: JSON.stringify(mouvement)
         }).then(res => res.ok ? location.reload() : alert("Update failed"));
     }
 
-    function submitAddForm(event) {
+    async function submitAddForm(event) {
         event.preventDefault();
-        const nom = document.getElementById("addNom").value;
-        const ville = document.getElementById("addVille").value;
-        const telephone = document.getElementById("addTelephone").value;
-        const fournisseur = {nom: nom, ville: ville, telephone: telephone};
         
-        fetch("/fournisseur", {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(fournisseur)
-        }).then(res => res.ok ? location.reload() : alert("Add failed"));
+        const typeRadio = document.querySelector('input[name="type"]:checked');
+        const type = typeRadio.value;
+        const produit_id = document.querySelector("#produit").value;
+        const quantite = parseInt(document.querySelector("#addquantite").value);
+        
+        const mouvement = {type: type, quantite: quantite};
+        
+        try {
+            const produits = await getProduits();
+            const produit = produits.find((element) => element.id == produit_id);
+            
+            if (!produit) {
+                alert("Product not found");
+                return;
+            }
+
+            if (type === "sortie" && produit.quantite < quantite) {
+                alert("pas assez de quantité");
+                return;
+            }
+            
+            const response = await fetch("/mouvement/"+produit_id, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(mouvement)
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.log(response)
+                alert("Add failed");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred");
+        }
     }
 
     function deleteFournisseur(id) {
-        if (confirm("Are you sure you want to delete this fournisseur?")) {
-            const fournisseurId = typeof id === 'string' ? id : id.dataset.id;
-            fetch("/fournisseur/" + fournisseurId, {
+        if (confirm("Are you sure you want to delete this mouvement?")) {
+            const mouvementId = typeof id === 'string' ? id : id.dataset.id;
+            fetch("/mouvement/" + mouvementId, {
                 method: "DELETE"
             }).then(res => res.ok ? location.reload() : alert("Delete failed"));
         }
