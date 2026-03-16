@@ -68,7 +68,52 @@ public class MouvementController {
        Mouvement m = mouvementService.findById(id);
        mouvement.setId(id);
        mouvement.setDate(m.getDate());
-       mouvementService.save(mouvement);
+       if ("entrer".equals(m.getType()) && "sortie".equals(mouvement.getType())){
+           Produit produit = m.getProduit();
+           produit.setQuantite(produit.getQuantite() - m.getQuantite());
+           produit.setQuantite(produit.getQuantite() - mouvement.getQuantite());
+           produitService.save(produit);
+           mouvementService.save(mouvement);
+       }
+       else if("sortie".equals(m.getType()) && "entrer".equals(mouvement.getType())){
+           Produit produit = m.getProduit();
+           produit.setQuantite(produit.getQuantite() + m.getQuantite());
+           produit.setQuantite(produit.getQuantite() + mouvement.getQuantite());
+           produitService.save(produit);
+           mouvementService.save(mouvement);
+       }
+       else if (m.getType().equals(mouvement.getType()) && m.getProduit().getId() == mouvement.getProduit().getId()){
+           Produit produit = m.getProduit();
+           if ("entrer".equals(mouvement.getType())){
+               produit.setQuantite(produit.getQuantite() + mouvement.getQuantite());
+           }
+           if ("sortie".equals(mouvement.getType())){
+               produit.setQuantite(produit.getQuantite() - mouvement.getQuantite());
+           }
+           mouvementService.save(mouvement);
+       }
+       else if (m.getType().equals(mouvement.getType()) && m.getProduit().getId() != mouvement.getProduit().getId()){
+           Produit oldProduit = m.getProduit();
+           Produit newProduit = mouvement.getProduit();
+
+           if ("entrer".equals(mouvement.getType())){
+               oldProduit.setQuantite(oldProduit.getQuantite() - m.getQuantite());
+           } else {
+               oldProduit.setQuantite(oldProduit.getQuantite() + m.getQuantite());
+           }
+
+           if ("entrer".equals(mouvement.getType())){
+               newProduit.setQuantite(newProduit.getQuantite() + mouvement.getQuantite());
+           } else {
+               newProduit.setQuantite(newProduit.getQuantite() - mouvement.getQuantite());
+           }
+
+           produitService.save(oldProduit);
+           produitService.save(newProduit);
+           mouvementService.save(mouvement);
+       }
+
+
         return ResponseEntity.ok().build();
     }
 
